@@ -4,7 +4,7 @@ from scipy.integrate import solve_ivp
 from scipy.optimize import least_squares
 import matplotlib.pyplot as plt
 
-data = np.loadtxt("Dynamics/fitting/data_DataCollection.txt",delimiter=",", skiprows=1)
+data = np.loadtxt("Dynamics/QD4/data_DataCollection.txt",delimiter=",", skiprows=1)
 
 t_data  = data[:, 0]
 u1_data = data[:, 1]
@@ -13,7 +13,7 @@ y1_data = data[:, 3]+273.15
 y2_data = data[:, 4]+273.15
 
 ##########MODIFY HERE IF THE AMBIENT TEMPERATURE DIFFERED FROM THE TEMPERATURE OF THE HEATERS DURING EXPERIMENTS
-Tinf = (y1_data[0]+ y2_data[0])/2
+Tinf = 19.0
 ################################################################################################################
 
 def model(t, x, u, p):

@@ -123,8 +123,8 @@ plt.ion()
 plt.show()
 
 # Feedforward parameters
-K_ff = -0.530
-delay_steps = 18
+K_ff = -0.217
+delay_steps = 50
 
 # Main Loop
 start_time = time.time()

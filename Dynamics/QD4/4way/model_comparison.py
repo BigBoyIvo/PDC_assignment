@@ -39,11 +39,11 @@ K11 = 0.664; tau11 = 159.0; theta11 = 6
 K12 = 0.174; tau12 = 263.0; theta12 = 31
 
 # G_Q1->T2 (Cross-heating from Q1)
-K21 = 0.352; tau21 = 147.0; theta21 = 24 
+K21 = 0.144; tau21 = 224.0; theta21 = 56 
 # G_Q2->T2 (Direct)
-K22 = 0.144; tau22 = 224.0; theta22 = 56
+K22 = 0.352; tau22 = 147.0; theta22 = 24
 
-Tss = 24.0  # degC (ambient temperature)
+Tss = 19.0  # degC (ambient temperature)
 Qss = 0.0   # % heater
 #######################################################
 

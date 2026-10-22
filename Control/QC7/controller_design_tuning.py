@@ -25,9 +25,9 @@ from scipy.integrate import odeint
 # D = derivative contribution
 def pid(sp,pv,pv_last,ierr,dt):
     ####Default
-    Kc   = 10.0 # K/%Heater
-    tauI = 50.0 # sec
-    tauD = 1.0  # sec
+    Kc   = 14.48 # K/%Heater
+    tauI = 159 # sec
+    tauD = 11.09  # sec
 
     # Parameters in terms of PID coefficients
     KP = Kc
@@ -86,14 +86,26 @@ tm = np.zeros(loops)
 
 # Temperature
 # set point (degC) for QC2
-Tsp1 = np.ones(loops) * 25.0 
-Tsp1[60:] = 40.0
-Tsp1[300:] = 30.0
-Tsp1[580:] = 60.0
+Tsp1 = np.ones(loops) * 20.0
 T1 = np.ones(loops) * a.T1 # measured T (degC)
 error_sp = np.zeros(loops)
 
-Tsp2 = np.ones(loops) * 23.0 # set point (degC)
+Tsp2 = np.ones(loops) * 20.0 # set point (degC)
+
+for i in range(loops):
+    if 5 <= i < 100:
+        Tsp2[i] = 40.0
+    elif 100 <= i < 105:
+        Tsp2[i] = 35.0
+    elif 105 <= i < 200:
+        Tsp2[i] = 40.0
+    elif 200 <= i < 400:
+        Tsp2[i] = 35.0
+    elif 400 <= i < 600:
+        Tsp2[i] = 60.0
+    elif 600 <= i < 900:
+        Tsp2[i] = 30.0 + 0.0667 * (i - 600)
+
 T2 = np.ones(loops) * a.T2 # measured T (degC)
 
 #  inputs (0 - 100%)
@@ -144,15 +156,15 @@ try:
         T2[i] = a.T2
 
         # Calculate PID output
-        [Q1[i],P,ierr,D] = pid(Tsp1[i],T1[i],T1[i-1],ierr,dt)
+        [Q2[i],P,ierr,D] = pid(Tsp2[i],T2[i],T2[i-1],ierr,dt)
 
         # Start setpoint error accumulation after 1 minute (60 seconds)
         if i>=60:
-            error_sp[i] = error_sp[i-1] + abs(Tsp1[i]-T1[i])
+            error_sp[i] = error_sp[i-1] + abs(Tsp2[i]-T2[i])
 
         # Write output (0-100)
-        a.Q1(Q1[i])
-        a.Q2(0.0)
+        a.Q1(0)
+        a.Q2(Q2[i])
 
         # Print line of data
         print(('{:6.1f} {:6.2f} {:6.2f} ' + \
@@ -162,23 +174,18 @@ try:
 
         # Plot
         plt.clf()
-        ax=plt.subplot(4,1,1)
+        ax=plt.subplot(3,1,1)
         ax.grid()
-        plt.plot(tm[0:i],T1[0:i],'r.',label=r'$T_1$ measured')
-        plt.plot(tm[0:i],Tsp1[0:i],'k--',label=r'$T_1$ set point')
+        plt.plot(tm[0:i],T2[0:i],'r.',label=r'$T_2$ measured')
+        plt.plot(tm[0:i],Tsp2[0:i],'k--',label=r'$T_2$ set point')
         plt.ylabel('Temperature (degC)')
         plt.legend(loc=2)
-        ax=plt.subplot(4,1,2)
+        ax=plt.subplot(3,1,2)
         ax.grid()
-        plt.plot(tm[0:i],Q1[0:i],'b-',label=r'$Q_1$')
+        plt.plot(tm[0:i],Q2[0:i],'b-',label=r'$Q_2$')
         plt.ylabel('Heater')
         plt.legend(loc='best')
-        ax=plt.subplot(4,1,3)
-        ax.grid()
-        plt.plot(tm[0:i],T1[0:i],'r.',label=r'$T_1$ measured')
-        plt.ylabel('Temperature (degC)')
-        plt.legend(loc=2)
-        ax=plt.subplot(4,1,4)
+        ax=plt.subplot(3,1,3)
         ax.grid()
         plt.plot(tm[0:i],error_sp[0:i],'r-',label='Set Point Error')
         plt.ylabel('Cumulative Error')
